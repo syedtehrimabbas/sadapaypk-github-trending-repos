@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.resetMain
 import org.junit.*
+import pk.sadapay.trendingrepos.data.MockGithubRepository
+import pk.sadapay.trendingrepos.data.repo.IGithubRepository
 
 @ExperimentalCoroutinesApi
 class MainVMTest {
@@ -13,11 +15,13 @@ class MainVMTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    lateinit var sut: MainVM
+    private lateinit var sut: MainVM
+    lateinit var mockGithubRepository: IGithubRepository
 
     @Before
     fun setUpMainViewModel() {
-        sut = MainVM()
+        mockGithubRepository = MockGithubRepository()
+        sut = MainVM(mockGithubRepository)
     }
 
     @After
@@ -28,7 +32,7 @@ class MainVMTest {
     @Test
     fun testLoadTopRepositoriesApiSuccess() {
         sut.loadTopRepositories(refresh = true)
-        Assert.assertNull(sut.topRepos.value)
+        Assert.assertNotNull(sut.topRepos.value)
     }
 
     @Test

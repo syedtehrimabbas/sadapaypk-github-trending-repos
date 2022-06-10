@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import pk.sadapay.trendingrepos.data.dto.Repo
+import pk.sadapay.trendingrepos.data.repo.IGithubRepository
 
-class MainVM : ViewModel(), IMain.ViewModel {
+class MainVM constructor(val githubRepository: IGithubRepository) : ViewModel(),
+    IMain.ViewModel {
 
     private val _topRepos: MutableLiveData<MutableList<Repo>> = MutableLiveData()
     override val topRepos: LiveData<MutableList<Repo>> = _topRepos
 
     override fun loadTopRepositories(queryParam: String, refresh: Boolean) {
+        _topRepos.value = mutableListOf()
     }
 
     override fun reloadData() {

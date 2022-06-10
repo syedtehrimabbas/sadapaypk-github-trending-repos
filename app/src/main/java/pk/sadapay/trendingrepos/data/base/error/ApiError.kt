@@ -1,4 +1,4 @@
-package pk.sadapay.trendingrepos.networking.base.error
+package pk.sadapay.trendingrepos.data.base.error
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName

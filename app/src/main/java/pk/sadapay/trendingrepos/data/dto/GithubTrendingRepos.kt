@@ -1,8 +1,8 @@
-package pk.sadapay.trendingrepos.networking.dto
+package pk.sadapay.trendingrepos.data.dto
 
 
 import com.google.gson.annotations.SerializedName
-import pk.sadapay.trendingrepos.networking.base.BaseResponse
+import pk.sadapay.trendingrepos.data.base.BaseResponse
 
 data class GithubTrendingRepos(
     @SerializedName("incomplete_results")

@@ -1,4 +1,4 @@
-package pk.sadapay.trendingrepos.networking.dto
+package pk.sadapay.trendingrepos.data.dto
 
 import com.google.gson.annotations.SerializedName
 

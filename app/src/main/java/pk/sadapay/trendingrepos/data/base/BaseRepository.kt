@@ -1,6 +1,6 @@
-package pk.sadapay.trendingrepos.networking.base
+package pk.sadapay.trendingrepos.data.base
 
-import pk.sadapay.trendingrepos.networking.base.error.ApiError
+import pk.sadapay.trendingrepos.data.base.error.ApiError
 import retrofit2.Response
 import com.google.gson.stream.MalformedJsonException as MalformedJsonException1
 

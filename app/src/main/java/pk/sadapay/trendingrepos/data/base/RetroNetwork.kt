@@ -1,4 +1,4 @@
-package pk.sadapay.trendingrepos.networking.base
+package pk.sadapay.trendingrepos.data.base
 
 import androidx.viewbinding.BuildConfig
 import okhttp3.HttpUrl

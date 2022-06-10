@@ -1,4 +1,4 @@
-package pk.sadapay.trendingrepos.networking.base
+package pk.sadapay.trendingrepos.data.base
 
 import retrofit2.Response
 

@@ -1,10 +1,9 @@
-package pk.sadapay.trendingrepos
+package pk.sadapay.trendingrepos.ui.main
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import pk.sadapay.trendingrepos.databinding.ActivityMainBinding
-import pk.sadapay.trendingrepos.viewmodel.MainVM
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewDataBinding: ActivityMainBinding

@@ -12,6 +12,7 @@ import pk.sadapay.trendingrepos.common.CoroutineRule
 import pk.sadapay.trendingrepos.data.base.ApiResponse
 import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.data.repo.IGithubRepository
+import pk.sadapay.trendingrepos.utils.UIState
 
 @ExperimentalCoroutinesApi
 class MainVMTest {
@@ -46,8 +47,19 @@ class MainVMTest {
     }
 
     @Test
-    fun testLoadTopRepositoriesApiFail() {
+    fun `Test Load Top Repositories Api Fail`() {
+        val mockkApi = mockk<IGithubRepository> {
+            coEvery { loadGithubTopRepositories("query", false) } returns ApiResponse.Error(mockk())
+        }
 
+        sut = MainVM(mockkApi)
+        sut.loadTopRepositories("query", false)
+
+        Assert.assertEquals(UIState.Error(""), sut.state.value)
+
+        coVerify {
+            mockkApi.loadGithubTopRepositories("query", false)
+        }
     }
 
     @After

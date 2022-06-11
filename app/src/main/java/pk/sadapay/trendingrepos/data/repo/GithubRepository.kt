@@ -15,18 +15,24 @@ class GithubRepository constructor(
         isRefresh: Boolean
     ): ApiResponse<GithubTrendingRepos> {
 
-        val repos = localGithubRepository.getTopRepos()
+        val localData = localGithubRepository.getTopRepos()
         return when {
-            !isRefresh && repos.isNotEmpty() -> {
+            isRefresh.not() && localData.isNotEmpty() -> {
                 ApiResponse.Success(
                     200,
-                    GithubTrendingRepos(repos = repos)
+                    GithubTrendingRepos(repos = localData)
                 )
             }
             else -> {
-                val response = remoteGithubRepository.getTrendingRepositories(query)
+                var response = remoteGithubRepository.getTrendingRepositories(query)
                 if (response is ApiResponse.Success) {
                     response.data.repos?.let { localGithubRepository.insertTopRepos(it) }
+                } else {
+                    if (localData.isNotEmpty())
+                        response = ApiResponse.Success(
+                            200,
+                            GithubTrendingRepos(repos = localData)
+                        )
                 }
                 response
             }

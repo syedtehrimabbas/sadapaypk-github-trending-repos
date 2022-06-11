@@ -11,10 +11,11 @@ import org.junit.Assert
 import org.junit.Test
 import pk.sadapay.trendingrepos.data.base.ApiResponse
 import pk.sadapay.trendingrepos.data.dto.Repo
+import pk.sadapay.trendingrepos.data.repo.IGithubRepository
 
 @ExperimentalCoroutinesApi
 class RemoteGithubRepositoryTest {
-    lateinit var sut: IRemoteGithubRepository
+    lateinit var sut: IGithubRepository
 
     @Test
     fun `test when remote data successfully fetch`() = runTest {
@@ -39,7 +40,7 @@ class RemoteGithubRepositoryTest {
     @Test
     fun `test when remote data not successfully fetch and through an error`() = runTest {
 
-        val sut = mockk<IRemoteGithubRepository> {
+        val sut = mockk<IGithubRepository> {
             coEvery { getTrendingRepositories("query") } returns ApiResponse.Error(mockk {
                 coEvery { message } returns "No Internet"
                 coEvery { statusCode } returns 504

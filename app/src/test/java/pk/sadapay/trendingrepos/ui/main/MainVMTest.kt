@@ -1,44 +1,57 @@
 package pk.sadapay.trendingrepos.ui.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import kotlinx.coroutines.Dispatchers
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.resetMain
-import org.junit.*
-import pk.sadapay.trendingrepos.data.MockGithubRepository
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert
+import org.junit.Rule
+import org.junit.Test
+import pk.sadapay.trendingrepos.common.CoroutineRule
+import pk.sadapay.trendingrepos.data.base.ApiResponse
+import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.data.repo.IGithubRepository
 
 @ExperimentalCoroutinesApi
 class MainVMTest {
+    @Rule
+    @JvmField
+    var coroutineRule = CoroutineRule()
 
     @Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var sut: MainVM
-    lateinit var mockGithubRepository: IGithubRepository
-
-    @Before
-    fun setUpMainViewModel() {
-        mockGithubRepository = MockGithubRepository()
-        sut = MainVM(mockGithubRepository)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain() //reset
-    }
 
     @Test
-    fun testLoadTopRepositoriesApiSuccess() {
-        sut.loadTopRepositories(refresh = true)
-        Assert.assertNotNull(sut.topRepos.value)
+    fun `test load top repositories api success`() = runTest {
+        val mockkApi = mockk<IGithubRepository> {
+            coEvery { loadGithubTopRepositories("query", false) } returns ApiResponse.Success(
+                200,
+                mockk {
+                    every { repos } returns listOf()
+                })
+        }
+
+        sut = MainVM(mockkApi)
+        sut.loadTopRepositories("query", false)
+
+        Assert.assertEquals(sut.topRepos.value, listOf<Repo>())
+
+        coVerify {
+            mockkApi.loadGithubTopRepositories("query", false)
+        }
     }
 
     @Test
     fun testLoadTopRepositoriesApiFail() {
-        sut.loadTopRepositories(refresh = true)
-        Assert.assertNull(sut.topRepos.value)
+
     }
 
+    @After
+    fun cleanUp() {
+        clearAllMocks()
+    }
 }

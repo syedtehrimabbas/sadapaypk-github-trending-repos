@@ -1,50 +1,112 @@
 package pk.sadapay.trendingrepos.data.repo
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import io.mockk.coEvery
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
-import pk.sadapay.trendingrepos.common.Utils
 import pk.sadapay.trendingrepos.data.base.ApiResponse
-import pk.sadapay.trendingrepos.data.dto.GithubTrendingRepos
+import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.data.repo.local.ILocalGithubRepository
 import pk.sadapay.trendingrepos.data.repo.remote.IRemoteGithubRepository
 
 @ExperimentalCoroutinesApi
 class GithubRepositoryTest {
-
-    private val remoteGithubRepository: IRemoteGithubRepository = mockk()
-    private val localGithubRepository: ILocalGithubRepository = mockk()
-    lateinit var sut: GithubRepository
-
-    @Before
-    fun setUp() {
-        sut = GithubRepository(localGithubRepository, remoteGithubRepository)
-    }
+    lateinit var sut: IGithubRepository
 
     @Test
-    fun `check the data is being returned either it is stale or remote`() {
-        val res = getMockResponse()
-        coEvery { localGithubRepository.getTopRepos() } returns res.repos!!
-        coEvery { remoteGithubRepository.getTrendingRepositories("abc") } returns ApiResponse.Success(200, res)
-        runBlocking {
-            Assert.assertNotNull(sut.loadGithubTopRepositories("abc", false))
+    fun `successful data fetching from local or remote`() = runTest {
+
+        val remoteMock = mockk<IRemoteGithubRepository> {
+            coEvery { getTrendingRepositories("query") } returns ApiResponse.Success(200, mockk {
+                every { repos } returns listOf(Repo())
+                coEvery { totalCount } returns 1
+            })
+        }
+
+        val localMock = mockk<ILocalGithubRepository> {
+            coEvery { getTopRepos() } returns listOf()
+            coEvery { insertTopRepos(listOf(Repo())) } returns mockk()
+        }
+
+        sut = GithubRepository(localMock, remoteMock)
+
+        val actual = sut.loadGithubTopRepositories("query", true)
+        val expected = listOf(Repo())
+        if (actual is ApiResponse.Success) {
+            Assert.assertEquals(actual.data.repos, expected)
+            Assert.assertEquals(actual.data.totalCount, 1)
+        }
+
+        coVerify {
+            remoteMock.getTrendingRepositories("query")
+            localMock.getTopRepos()
         }
     }
 
-    private fun getMockResponse(): GithubTrendingRepos {
-        val gson = GsonBuilder().create()
-        val itemType = object : TypeToken<GithubTrendingRepos>() {}.type
-        return gson.fromJson(Utils.readFileFromTestResources("success_response_api.json"), itemType)
+    @Test
+    fun `successful data fetching from remote when no stale data found`() = runTest {
+
+        val remoteMock = mockk<IRemoteGithubRepository> {
+            coEvery { getTrendingRepositories("query") } returns ApiResponse.Success(200, mockk {
+                coEvery { repos } returns listOf(Repo())
+                coEvery { totalCount } returns 1
+            })
+        }
+
+        val localMock = mockk<ILocalGithubRepository> {
+            coEvery { getTopRepos() } returns listOf()
+            coEvery { insertTopRepos(listOf(Repo())) } returns mockk()
+        }
+
+        sut = GithubRepository(localMock, remoteMock)
+
+        val actual = sut.loadGithubTopRepositories("query", true)
+        val expected = listOf(Repo())
+
+        if (actual is ApiResponse.Success) {
+            Assert.assertEquals(actual.data.repos, expected)
+            Assert.assertEquals(actual.data.totalCount, 1)
+        }
+
+        coVerify {
+            remoteMock.getTrendingRepositories("query")
+            localMock.getTopRepos()
+            localMock.insertTopRepos(listOf(Repo()))
+        }
+    }
+
+    @Test
+    fun `fail api due to bad network connection and no stale data`() = runTest {
+        val remoteMock = mockk<IRemoteGithubRepository> {
+            coEvery { getTrendingRepositories("query") } returns ApiResponse.Error(mockk {
+                coEvery { message } returns "No Internet"
+                coEvery { statusCode } returns 504
+            })
+        }
+
+        val localMock = mockk<ILocalGithubRepository> {
+            coEvery { getTopRepos() } returns listOf()
+        }
+
+        sut = GithubRepository(localMock, remoteMock)
+
+        val actual = sut.loadGithubTopRepositories("query", false)
+        val expected = 504
+
+        if (actual is ApiResponse.Error) {
+            Assert.assertEquals(actual.error.statusCode, expected)
+        }
+
+        coVerify {
+            remoteMock.getTrendingRepositories("query")
+            localMock.getTopRepos()
+        }
     }
 
     @After
-    fun tearDown() {
+    fun cleanUp() {
+        clearAllMocks()
     }
 }

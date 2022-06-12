@@ -10,6 +10,7 @@ import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import pk.sadapay.trendingrepos.common.CoroutineRule
+import pk.sadapay.trendingrepos.common.getOrAwaitValue
 import pk.sadapay.trendingrepos.data.base.ApiResponse
 import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.data.repo.IGithubRepository
@@ -34,7 +35,7 @@ class MainVMTest {
             coEvery { getTrendingRepositories("query") } returns ApiResponse.Success(
                 200,
                 mockk {
-                    every { repos } returns listOf()
+                    coEvery { repos } returns listOf(Repo())
                 })
         }
         val mockCache = mockk<Cache>()
@@ -42,7 +43,8 @@ class MainVMTest {
         sut = MainVM(mockkApi, mockCache)
         sut.loadTopRepositories("query", false)
 
-        Assert.assertEquals(sut.topRepos.value, listOf<Repo>())
+        Assert.assertEquals(listOf(Repo()), sut.topRepos.getOrAwaitValue())
+        Assert.assertEquals(UIState.Content, sut.state.getOrAwaitValue())
 
         coVerify {
             mockkApi.getTrendingRepositories("query")
@@ -52,14 +54,19 @@ class MainVMTest {
     @Test
     fun `Test Load Top Repositories Api Fail`() {
         val mockkApi = mockk<IGithubRepository> {
-            coEvery { getTrendingRepositories("query") } returns ApiResponse.Error(mockk())
+            coEvery { getTrendingRepositories("query") } returns ApiResponse.Error(
+                mockk {
+                    coEvery { message } returns "Error"
+                }
+            )
         }
+        val mockCache = mockk<Cache>()
 
-        sut = MainVM(mockkApi, mockk())
+        sut = MainVM(mockkApi, mockCache)
 
         sut.loadTopRepositories("query", false)
 
-        Assert.assertEquals(UIState.Error(""), sut.state.value)
+        Assert.assertEquals(mutableListOf<Repo>(), sut.topRepos.getOrAwaitValue())
 
         coVerify {
             mockkApi.getTrendingRepositories("query")
@@ -80,7 +87,8 @@ class MainVMTest {
         sut = MainVM(mockkApi, mockCache)
         sut.loadTopRepositories("query", true)
 
-        Assert.assertEquals(sut.topRepos.value, listOf<Repo>())
+        Assert.assertEquals(listOf(Repo()), sut.topRepos.getOrAwaitValue())
+        Assert.assertEquals(UIState.Content, sut.state.getOrAwaitValue())
 
         coVerify {
             mockkApi.getTrendingRepositories("query")

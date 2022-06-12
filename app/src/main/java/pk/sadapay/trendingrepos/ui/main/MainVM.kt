@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import pk.sadapay.trendingrepos.data.base.ApiResponse
 import pk.sadapay.trendingrepos.data.dto.Repo
@@ -18,7 +17,10 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
-class MainVM @Inject constructor(private val githubRepository: IGithubRepository, private val cache: Cache) :
+class MainVM @Inject constructor(
+    private val githubRepository: IGithubRepository,
+    private val cache: Cache
+) :
     ViewModel(),
     IMain.ViewModel {
 
@@ -29,7 +31,24 @@ class MainVM @Inject constructor(private val githubRepository: IGithubRepository
     override var state: LiveData<UIState> = _state
 
     override fun deleteCache(cacheDir: File): Boolean {
-        return true
+        return when {
+            cacheDir.isDirectory -> {
+                val children: Array<String> = cacheDir.list() as Array<String>
+                for (i in children.indices) {
+                    val success = deleteCache(File(cacheDir, children[i]))
+                    if (!success) {
+                        return false
+                    }
+                }
+                cacheDir.delete()
+            }
+            cacheDir.isFile -> {
+                cacheDir.delete()
+            }
+            else -> {
+                false
+            }
+        }
     }
 
     override fun loadTopRepositories(queryParam: String, refresh: Boolean) {
@@ -37,22 +56,17 @@ class MainVM @Inject constructor(private val githubRepository: IGithubRepository
             if (refresh)
                 deleteCache(cacheDir = cache.directory)
             _state.postValue(UIState.Loading)
-            val response = githubRepository.getTrendingRepositories(queryParam)
-            withContext(Dispatchers.Main) {
-                when (response) {
+            when (val response = githubRepository.getTrendingRepositories(queryParam)) {
                     is ApiResponse.Success -> {
                         _topRepos.value = response.data.repos as MutableList<Repo>?
+                        _state.value = UIState.Content
                     }
                     is ApiResponse.Error -> {
                         _topRepos.value = mutableListOf()
                         _state.value = UIState.Error(response.error.message)
                     }
                 }
-            }
         }
-    }
-
-    override fun reloadData() {
     }
 
     private fun launch(dispatcher: CoroutineContext = Dispatchers.IO, block: suspend () -> Unit) {

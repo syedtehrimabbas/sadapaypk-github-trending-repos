@@ -1,7 +1,6 @@
 package pk.sadapay.trendingrepos.ui.main
 
 import androidx.lifecycle.LiveData
-import com.kennyc.view.MultiStateView
 import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.ui.adapter.TrendingRepoListAdapter
 import pk.sadapay.trendingrepos.utils.UIState

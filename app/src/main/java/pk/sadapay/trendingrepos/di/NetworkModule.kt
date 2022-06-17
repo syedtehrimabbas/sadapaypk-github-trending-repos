@@ -17,10 +17,8 @@ class NetworkModule {
     private val diskCacheSize = (10 * 1024 * 1024).toLong() // 10 MB
 
     @Provides
-    fun providesReposService(
-        @ApplicationContext context: Context
-    ): GithubRepositoryService =
-        RetroNetwork(context).createService(GithubRepositoryService::class.java)
+    fun providesReposService(): GithubRepositoryService =
+        RetroNetwork().createService(GithubRepositoryService::class.java)
 
     @Provides
     fun provideCache(@ApplicationContext context: Context): Cache {

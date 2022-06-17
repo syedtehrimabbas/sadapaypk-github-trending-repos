@@ -13,7 +13,7 @@
         android:layout_width="@dimen/_35sdp"
         android:layout_height="@dimen/_35sdp"
         android:layout_marginStart="@dimen/_10sdp"
-        android:background="@color/grey"
+        android:background="@color/purple_200"
         app:layout_constraintBottom_toBottomOf="@+id/tvRepoName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

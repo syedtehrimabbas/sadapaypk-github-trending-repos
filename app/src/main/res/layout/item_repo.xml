@@ -27,7 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:text="apple"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/ivProfile"
@@ -41,7 +40,6 @@
         android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:text="apple/swift"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/ivProfile"
@@ -69,7 +67,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="3"
-                android:text="An enterprise-class UI design language and React UI library"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.helper.widget.Flow
@@ -93,8 +90,7 @@
                 android:id="@+id/tvTopicName"
                 style="@style/App.TextView.Black"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Apple" />
+                android:layout_height="wrap_content" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvStarCount"
@@ -104,7 +100,6 @@
                 android:drawableStart="@drawable/ic_star"
                 android:drawablePadding="@dimen/_2sdp"
                 android:gravity="center_vertical"
-                android:text="500"
                 app:drawableTint="@color/star_color" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

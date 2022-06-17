@@ -1,6 +1,8 @@
 package pk.sadapay.trendingrepos.ui.main
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -78,5 +80,17 @@ class MainActivity : AppCompatActivity(), IMain.View {
 
     override fun setRepoListToAdapter(list: MutableList<Repo>) {
         adapter.setList(list)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_refresh, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.refresh -> viewModel.loadTopRepositories(refresh = true)
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

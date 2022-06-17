@@ -9,6 +9,7 @@ import java.io.File
 interface IMain {
     interface View {
         fun getView(multiStateView: MultiStateView, state: MultiStateView.ViewState,viewId:Int): android.view.View?
+        fun onUiStateChange(uiState:UIState)
     }
 
     interface ViewModel {

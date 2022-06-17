@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), IMain.View {
 
     private val viewModel: MainVM by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewDataBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewDataBinding.root)
@@ -35,24 +35,7 @@ class MainActivity : AppCompatActivity(), IMain.View {
         viewModel.topRepos.observe(this) {
             Log.d("topRepos", it.size.toString())
         }
-
-        viewModel.state.observe(this) {
-            viewDataBinding.multiStateView.viewState = when (it) {
-                is UIState.Loading -> MultiStateView.ViewState.LOADING
-                is UIState.Error -> {
-
-                    (getView(
-                        viewDataBinding.multiStateView,
-                        MultiStateView.ViewState.ERROR,
-                        R.id.tvErrorDescription
-                    ) as MaterialTextView).text = it.error
-
-                    MultiStateView.ViewState.ERROR
-                }
-                is UIState.Content -> MultiStateView.ViewState.CONTENT
-            }
-
-        }
+        viewModel.state.observe(this, ::onUiStateChange)
     }
 
     override fun getView(
@@ -62,5 +45,23 @@ class MainActivity : AppCompatActivity(), IMain.View {
     ): View? {
         return multiStateView.getView(state)
             ?.findViewById(viewId)
+    }
+
+    override fun onUiStateChange(uiState: UIState) {
+
+        viewDataBinding.multiStateView.viewState = when (uiState) {
+            is UIState.Loading -> MultiStateView.ViewState.LOADING
+            is UIState.Error -> {
+
+                (getView(
+                    viewDataBinding.multiStateView,
+                    MultiStateView.ViewState.ERROR,
+                    R.id.tvErrorDescription
+                ) as MaterialTextView).text = uiState.error
+
+                MultiStateView.ViewState.ERROR
+            }
+            is UIState.Content -> MultiStateView.ViewState.CONTENT
+        }
     }
 }

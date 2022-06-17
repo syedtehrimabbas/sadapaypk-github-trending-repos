@@ -1,7 +1,6 @@
 package pk.sadapay.trendingrepos.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,8 +8,11 @@ import com.google.android.material.textview.MaterialTextView
 import com.kennyc.view.MultiStateView
 import dagger.hilt.android.AndroidEntryPoint
 import pk.sadapay.trendingrepos.R
+import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.databinding.ActivityMainBinding
+import pk.sadapay.trendingrepos.ui.adapter.TrendingRepoListAdapter
 import pk.sadapay.trendingrepos.utils.UIState
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), IMain.View {
@@ -18,10 +20,15 @@ class MainActivity : AppCompatActivity(), IMain.View {
 
     private val viewModel: MainVM by viewModels()
 
+    @Inject
+    lateinit var adapter: TrendingRepoListAdapter
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewDataBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewDataBinding.root)
+        initRecyclerView(adapter)
         viewModel.loadTopRepositories(refresh = false)
 
         getView(
@@ -32,9 +39,7 @@ class MainActivity : AppCompatActivity(), IMain.View {
             viewModel.loadTopRepositories(refresh = true)
         }
 
-        viewModel.topRepos.observe(this) {
-            Log.d("topRepos", it.size.toString())
-        }
+        viewModel.topRepos.observe(this, ::setRepoListToAdapter)
         viewModel.state.observe(this, ::onUiStateChange)
     }
 
@@ -63,5 +68,15 @@ class MainActivity : AppCompatActivity(), IMain.View {
             }
             is UIState.Content -> MultiStateView.ViewState.CONTENT
         }
+    }
+
+    override fun initRecyclerView(adapter: TrendingRepoListAdapter) {
+        with(viewDataBinding.recyclerView) {
+            this.adapter = adapter
+        }
+    }
+
+    override fun setRepoListToAdapter(list: MutableList<Repo>) {
+        adapter.setList(list)
     }
 }

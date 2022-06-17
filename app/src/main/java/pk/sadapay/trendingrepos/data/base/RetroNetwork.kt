@@ -73,9 +73,9 @@ class RetroNetwork @Inject constructor(@ApplicationContext val context: Context)
                             60 * 60 * 24
                         )
                     )
-                    .build();
+                    .build()
             } else {
-                originalResponse;
+                originalResponse
             }
 
         }

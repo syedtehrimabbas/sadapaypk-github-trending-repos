@@ -6,7 +6,8 @@
     android:animateLayoutChanges="true"
     android:paddingStart="@dimen/_20sdp"
     android:paddingTop="@dimen/_10sdp"
-    android:paddingEnd="0dp">
+    android:paddingEnd="0dp"
+    >
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivProfile"
@@ -46,22 +47,6 @@
         app:layout_constraintStart_toEndOf="@id/ivProfile"
         app:layout_constraintTop_toBottomOf="@id/tvOwnerName" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tvDescription"
-        style="@style/App.TextView.Grey"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:maxLines="2"
-        android:visibility="gone"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/ivProfile"
-        app:layout_constraintTop_toBottomOf="@id/tvRepoName" />
-
     <net.cachapa.expandablelayout.ExpandableLayout
         android:id="@+id/expandable_layout"
         android:layout_width="0dp"
@@ -72,7 +57,7 @@
         app:el_parallax="0.5"
         app:layout_constraintEnd_toEndOf="@+id/tvRepoName"
         app:layout_constraintStart_toStartOf="@+id/tvRepoName"
-        app:layout_constraintTop_toBottomOf="@id/tvDescription">
+        app:layout_constraintTop_toBottomOf="@id/tvRepoName">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

@@ -3,13 +3,21 @@ package pk.sadapay.trendingrepos.ui.main
 import androidx.lifecycle.LiveData
 import com.kennyc.view.MultiStateView
 import pk.sadapay.trendingrepos.data.dto.Repo
+import pk.sadapay.trendingrepos.ui.adapter.TrendingRepoListAdapter
 import pk.sadapay.trendingrepos.utils.UIState
 import java.io.File
 
 interface IMain {
     interface View {
-        fun getView(multiStateView: MultiStateView, state: MultiStateView.ViewState,viewId:Int): android.view.View?
-        fun onUiStateChange(uiState:UIState)
+        fun getView(
+            multiStateView: MultiStateView,
+            state: MultiStateView.ViewState,
+            viewId: Int
+        ): android.view.View?
+
+        fun onUiStateChange(uiState: UIState)
+        fun initRecyclerView(adapter: TrendingRepoListAdapter)
+        fun setRepoListToAdapter(list: MutableList<Repo>)
     }
 
     interface ViewModel {

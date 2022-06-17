@@ -57,15 +57,15 @@ class MainVM @Inject constructor(
                 deleteCache(cacheDir = cache.directory)
             _state.postValue(UIState.Loading)
             when (val response = githubRepository.getTrendingRepositories(queryParam)) {
-                    is ApiResponse.Success -> {
-                        _topRepos.value = response.data.repos as MutableList<Repo>?
-                        _state.value = UIState.Content
-                    }
-                    is ApiResponse.Error -> {
-                        _topRepos.value = mutableListOf()
-                        _state.value = UIState.Error(response.error.message)
-                    }
+                is ApiResponse.Success -> {
+                    _topRepos.postValue(response.data.repos as MutableList<Repo>?)
+                    _state.postValue(UIState.Content)
                 }
+                is ApiResponse.Error -> {
+                    _topRepos.postValue(mutableListOf())
+                    _state.postValue(UIState.Error(response.error.message))
+                }
+            }
         }
     }
 

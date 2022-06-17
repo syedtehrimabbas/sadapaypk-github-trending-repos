@@ -18,6 +18,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="20"
             tools:listitem="@layout/item_repo" />
     </com.kennyc.view.MultiStateView>

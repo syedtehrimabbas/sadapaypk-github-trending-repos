@@ -5,7 +5,6 @@ import com.kennyc.view.MultiStateView
 import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.ui.adapter.TrendingRepoListAdapter
 import pk.sadapay.trendingrepos.utils.UIState
-import java.io.File
 
 interface IMain {
     interface View {
@@ -24,6 +23,6 @@ interface IMain {
         val topRepos: LiveData<MutableList<Repo>>
         fun loadTopRepositories(queryParam: String = "language=+sort:stars", refresh: Boolean)
         var state: LiveData<UIState>
-        fun deleteCache(cacheDir: File): Boolean
+        fun deleteCache()
     }
 }

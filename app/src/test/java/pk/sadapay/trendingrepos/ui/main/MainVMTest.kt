@@ -75,14 +75,16 @@ class MainVMTest {
 
     @Test
     fun `Test the user required force current data and cache deleted`() = runTest {
+        val diskCacheSize = (10 * 1024 * 1024).toLong() // 10 MB
         val mockkApi = mockk<IGithubRepository> {
             coEvery { getTrendingRepositories("query") } returns ApiResponse.Success(
                 200,
                 mockk {
-                    every { repos } returns listOf()
+                    every { repos } returns listOf(Repo())
                 })
         }
-        val mockCache = mockk<Cache>()
+        val cacheDir= File("./build/tmp/test-ok-cache")
+        val mockCache = Cache(cacheDir, diskCacheSize)
 
         sut = MainVM(mockkApi, mockCache)
         sut.loadTopRepositories("query", true)

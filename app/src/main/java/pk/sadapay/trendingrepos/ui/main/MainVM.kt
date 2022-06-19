@@ -30,31 +30,14 @@ class MainVM @Inject constructor(
     private var _state: MutableLiveData<UIState> = MutableLiveData()
     override var state: LiveData<UIState> = _state
 
-    override fun deleteCache(cacheDir: File): Boolean {
-        return when {
-            cacheDir.isDirectory -> {
-                val children: Array<String> = cacheDir.list() as Array<String>
-                for (i in children.indices) {
-                    val success = deleteCache(File(cacheDir, children[i]))
-                    if (!success) {
-                        return false
-                    }
-                }
-                cacheDir.delete()
-            }
-            cacheDir.isFile -> {
-                cacheDir.delete()
-            }
-            else -> {
-                false
-            }
-        }
+    override fun deleteCache() {
+        cache.evictAll()
     }
 
     override fun loadTopRepositories(queryParam: String, refresh: Boolean) {
+        if (refresh)
+            deleteCache()
         launch {
-            if (refresh)
-                deleteCache(cacheDir = cache.directory)
             _state.postValue(UIState.Loading)
             when (val response = githubRepository.getTrendingRepositories(queryParam)) {
                 is ApiResponse.Success -> {

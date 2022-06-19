@@ -5,9 +5,9 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.rule.ActivityTestRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +19,7 @@ import pk.sadapay.trendingrepos.utils.UIState
 internal class MainActivityTest {
 
     @get:Rule
-    var activityScenarioRule = ActivityTestRule(MainActivity::class.java)
+    var activityScenarioRule = ActivityScenarioRule(MainActivity::class.java)
 
     @Test
     fun assert_multiStateView_Is_Displayed() {
@@ -33,7 +33,9 @@ internal class MainActivityTest {
 
     @Test
     fun assert_Recyclerview_is_visible_when_ui_state_is_content() {
-        activityScenarioRule.activity.onUiStateChange(UIState.Content)
+        activityScenarioRule.scenario.onActivity {
+            it.onUiStateChange(UIState.Content)
+        }
 
         onView(ViewMatchers.withId(R.id.multiStateView)).check(
             matches(
@@ -46,8 +48,9 @@ internal class MainActivityTest {
 
     @Test
     fun assert_Shimmer_is_visible_when_ui_state_is_loading() {
-        activityScenarioRule.activity.onUiStateChange(UIState.Loading)
-
+        activityScenarioRule.scenario.onActivity {
+            it.onUiStateChange(UIState.Loading)
+        }
         onView(ViewMatchers.withId(R.id.shimmerFrameLayout)).check(
             matches(
                 ViewMatchers.withEffectiveVisibility(
@@ -59,8 +62,9 @@ internal class MainActivityTest {
 
     @Test
     fun assert_Error_layout_is_visible_when_ui_state_is_loading() {
-        activityScenarioRule.activity.onUiStateChange(UIState.Error(""))
-
+        activityScenarioRule.scenario.onActivity {
+            it.onUiStateChange(UIState.Error(""))
+        }
         onView(ViewMatchers.withId(R.id.layoutError)).check(
             matches(
                 ViewMatchers.withEffectiveVisibility(

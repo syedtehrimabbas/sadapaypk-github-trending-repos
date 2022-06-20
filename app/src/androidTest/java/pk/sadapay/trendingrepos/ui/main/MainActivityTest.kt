@@ -28,6 +28,9 @@ internal class MainActivityTest {
 
     @Test
     fun assert_Retry_Button_Click() {
+        activityScenarioRule.scenario.onActivity {
+            it.onUiStateChange(UIState.Error(""))
+        }
         onView(ViewMatchers.withId(R.id.buttonRetry)).perform(click())
     }
 

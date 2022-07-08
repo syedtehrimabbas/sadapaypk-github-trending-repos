@@ -43,7 +43,8 @@ class MainVMTest {
         sut = MainVM(mockkApi, mockCache)
         sut.loadTopRepositories("query", false)
 
-        Assert.assertEquals(listOf(Repo()), sut.topRepos.getOrAwaitValue())
+        Assert.assertEquals(listOf(Repo()), sut.originalTopRepos)
+
         Assert.assertEquals(UIState.Content, sut.state.getOrAwaitValue())
 
         coVerify {
@@ -66,7 +67,7 @@ class MainVMTest {
 
         sut.loadTopRepositories("query", false)
 
-        Assert.assertEquals(mutableListOf<Repo>(), sut.topRepos.getOrAwaitValue())
+        Assert.assertEquals(listOf<Repo>(), sut.originalTopRepos)
 
         coVerify {
             mockkApi.getTrendingRepositories("query")
@@ -83,7 +84,7 @@ class MainVMTest {
                     every { repos } returns listOf(Repo())
                 })
         }
-        val cacheDir= File("./build/tmp/test-ok-cache")
+        val cacheDir = File("./build/tmp/test-ok-cache")
         val mockCache = Cache(cacheDir, diskCacheSize)
 
         sut = MainVM(mockkApi, mockCache)
@@ -95,6 +96,51 @@ class MainVMTest {
         coVerify {
             mockkApi.getTrendingRepositories("query")
         }
+    }
+
+    @Test
+    fun testIsListSorted() = runTest {
+        sut = MainVM(mockk(), mockk())
+
+        sut.originalTopRepos = mutableListOf(
+            Repo(name = "D"),
+            Repo(name = "C"),
+            Repo(name = "B"),
+            Repo(name = "A")
+        )
+
+        sut.sortDataAlphabetic()
+
+        val expected = mutableListOf(
+            Repo(name = "A"),
+            Repo(name = "B"),
+            Repo(name = "C"),
+            Repo(name = "D")
+        )
+
+        Assert.assertEquals(expected, sut.topRepos.getOrAwaitValue())
+    }
+    @Test
+    fun testUnSortData() = runTest {
+        sut = MainVM(mockk(), mockk())
+
+        sut.originalTopRepos = mutableListOf(
+            Repo(name = "D"),
+            Repo(name = "C"),
+            Repo(name = "B"),
+            Repo(name = "A")
+        )
+
+        sut.unSortData()
+
+        val expected = mutableListOf(
+            Repo(name = "D"),
+            Repo(name = "C"),
+            Repo(name = "B"),
+            Repo(name = "A")
+        )
+
+        Assert.assertEquals(expected, sut.topRepos.getOrAwaitValue())
     }
 
     @After

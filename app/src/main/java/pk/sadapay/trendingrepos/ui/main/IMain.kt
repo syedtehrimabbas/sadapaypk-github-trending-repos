@@ -24,5 +24,7 @@ interface IMain {
         fun loadTopRepositories(queryParam: String = "language=+sort:stars", refresh: Boolean)
         var state: LiveData<UIState>
         fun deleteCache()
+        fun sortDataAlphabetic()
+        fun unSortData()
     }
 }

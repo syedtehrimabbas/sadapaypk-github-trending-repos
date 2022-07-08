@@ -12,7 +12,6 @@ import pk.sadapay.trendingrepos.data.base.ApiResponse
 import pk.sadapay.trendingrepos.data.dto.Repo
 import pk.sadapay.trendingrepos.data.repo.IGithubRepository
 import pk.sadapay.trendingrepos.utils.UIState
-import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -29,6 +28,8 @@ class MainVM @Inject constructor(
 
     private var _state: MutableLiveData<UIState> = MutableLiveData()
     override var state: LiveData<UIState> = _state
+
+    var originalTopRepos: List<Repo> = listOf()
 
     override fun deleteCache() {
         cache.evictAll()
@@ -54,5 +55,13 @@ class MainVM @Inject constructor(
 
     private fun launch(dispatcher: CoroutineContext = Dispatchers.IO, block: suspend () -> Unit) {
         viewModelScope.launch(dispatcher) { block() }
+    }
+
+    override fun sortDataAlphabetic() {
+        _topRepos.value = originalTopRepos.sortedBy { it.name } as MutableList<Repo>
+    }
+
+    override fun unSortData() {
+        _topRepos.value = originalTopRepos as MutableList<Repo>
     }
 }
